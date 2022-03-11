@@ -1,7 +1,7 @@
 
 build:
 	@echo "run docker build"
-	@echo docker build --platform linux/amd64 .
+	@docker build --platform linux/amd64 .
 
 scan:
 	@echo "run grype container scan"

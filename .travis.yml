@@ -9,6 +9,6 @@ before_install:
   - docker search litecoin
 
 script:
-  - echo docker build --platform linux/amd64 -t $TRAVIS_COMMIT-$TRAVIS_BUILD_ID .
-  - echo docker tag $TRAVIS_COMMIT-$TRAVIS_BUILD_ID $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT
-  - echo docker push $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT
+  - docker build --platform linux/amd64 -t $TRAVIS_COMMIT-$TRAVIS_BUILD_ID .
+  - docker tag $TRAVIS_COMMIT-$TRAVIS_BUILD_ID $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT
+  - docker push $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT

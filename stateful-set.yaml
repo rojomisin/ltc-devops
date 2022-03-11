@@ -6,7 +6,7 @@ metadata:
     app: ltc
 spec:
   ports:
-    - port: 9332
+    - port: 9333
       name: ltc
   clusterIP: None
   selector:
@@ -19,30 +19,27 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: ltc # Label selector that determines which Pods belong to the StatefulSet
-      # Must match spec: template: metadata: labels
+      app: ltc
   serviceName: "litecoind"
   replicas: 1
   template:
     metadata:
       labels:
-        app: ltc # Pod template's label selector
+        app: ltc
     spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: ltc
-          image: registry.gitlab.com/rojomisin/ltc-devops
+          image: registry.gitlab.com/rojomisin/ltc-devops/litecoind:9
           ports:
-            - containerPort: 9332
+            - containerPort: 9333
               name: ltc
           volumeMounts:
             - name: blocks
-              mountPath: /home/litecoin/.litecoin
-  volumeClaimTemplates:
-    - metadata:
-        name: blocks
-      spec:
-        accessModes: [ "ReadWriteOnce" ]
-        resources:
-          requests:
-            storage: 10Gi
+              mountPath: /var/app-data
+      volumes:
+        - name: blocks
+          # This GCE PD must already exist: CLOUDSDK_CORE_PROJECT=elated-oxide-340704 gcloud compute disks create --size=100GB --zone=us-central1-a ltc-data
+          gcePersistentDisk:
+            pdName: ltc-data
+            fsType: ext4

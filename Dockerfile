@@ -22,8 +22,10 @@ RUN sha256sum -c litecoin-checksum.sha256 || exit 1
 RUN tar -xvzf litecoin-0.18.1-x86_64-linux-gnu.tar.gz
 
 # secure
+USER root:root
 RUN apt-get remove curl -y
 
+USER litecoin:litecoin
 ENV PATH="/var/app/litecoin-0.18.1/bin:${PATH}"
 VOLUME ["/var/app-data"]
 ENTRYPOINT litecoind

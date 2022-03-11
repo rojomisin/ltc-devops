@@ -3,11 +3,13 @@ language: ruby
 services:
   - docker
 
+cache:
+  directories:
+    - "$HOME/google-cloud-sdk/"
+
 before_install:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin $DOCKER_REGISTRY
-  - docker ps -a
-  - docker search litecoin
-  -
+  - docker info
 
 script:
   - echo "build docker image..."
@@ -17,3 +19,9 @@ script:
   - echo "run grype container scan"...
   - curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
   - ./grype $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT --only-fixed --fail-on low
+  - echo "install gcloud cli..." # courtesy of https://stackoverflow.com/questions/38762590/how-to-install-google-cloud-sdk-on-travis?answertab=active#tab-top"
+  - gcloud version || true
+  - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
+  # Add gcloud to $PATH
+  - source /home/travis/google-cloud-sdk/path.bash.inc
+  - gcloud version

@@ -3,10 +3,12 @@ language: ruby
 services:
   - docker
 
-#before_install:
-#  - docker pull carlad/sinatra
-#  - docker run -d -p 127.0.0.1:80:4567 carlad/sinatra /bin/sh -c "cd /root/sinatra; bundle exec foreman start;"
-#  - docker ps -a
+before_install:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin $DOCKER_REGISTRY
+  - docker ps -a
+  - docker search litecoin
 
 script:
-  - make build
+  - echo docker build --platform linux/amd64 -t $TRAVIS_COMMIT-$TRAVIS_BUILD_ID .
+  - echo docker tag $TRAVIS_COMMIT-$TRAVIS_BUILD_ID $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT
+  - echo docker push $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT

@@ -7,8 +7,13 @@ before_install:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin $DOCKER_REGISTRY
   - docker ps -a
   - docker search litecoin
+  -
 
 script:
+  - echo "build docker image..."
   - docker build --platform linux/amd64 -t $TRAVIS_COMMIT-$TRAVIS_BUILD_ID .
   - docker tag $TRAVIS_COMMIT-$TRAVIS_BUILD_ID $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT
   - docker push $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT
+  - echo "run grype container scan"...
+  - curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
+  - ./grype $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT --only-fixed --fail-on low

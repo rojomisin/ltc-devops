@@ -25,6 +25,7 @@ RUN tar -xvzf litecoin-0.18.1-x86_64-linux-gnu.tar.gz
 USER root:root
 RUN apt-get remove curl -y
 
+EXPOSE 9333
 USER litecoin:litecoin
 ENV PATH="/var/app/litecoin-0.18.1/bin:${PATH}"
 VOLUME ["/var/app-data"]

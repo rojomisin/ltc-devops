@@ -29,6 +29,7 @@ script:
   - gcloud config set disable_prompts true
   - gcloud container clusters get-credentials nginx-1-cluster --region us-central1-a
   - echo "run a kubectl command"
+  - gcloud components install kubectl
   - kubectl get pods -A
 
 # project : elated-oxide-340704

@@ -15,7 +15,7 @@ before_install:
 stages:
   - build push scan
   - name: deploy
-    if: branch = master
+    if: branch = main
 
 jobs:
   include:
@@ -27,7 +27,7 @@ jobs:
         - docker push $DOCKER_REGISTRY/$DOCKER_REPO_URI:latest
         - echo "run grype container scan"...
         - curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
-        - "./grype $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT --only-fixed --fail-on low"
+        - ./grype $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT --only-fixed --fail-on low
     - stage: deploy
       script:
         - gcloud version || true

@@ -13,30 +13,22 @@ before_install:
   - docker info
 
 stages:
-  - build
-  - push
-  - scan
-  - name: gke init
-    if: branch = master
+  - build push scan
   - name: deploy
     if: branch = master
 
 jobs:
   include:
-    - stage: build
+    - stage: build push scan
       script:
         - echo "build docker image..."
         - docker build --platform linux/amd64 -t $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT -t $TRAVIS_COMMIT-$TRAVIS_BUILD_ID .
-    - stage: push
-      script:
         - docker tag $TRAVIS_COMMIT-$TRAVIS_BUILD_ID $DOCKER_REGISTRY/$DOCKER_REPO_URI:latest
         - docker push $DOCKER_REGISTRY/$DOCKER_REPO_URI:latest
-    - stage: scan
-      script:
         - echo "run grype container scan"...
         - curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
         - "./grype $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT --only-fixed --fail-on low"
-    - stage: gke init
+    - stage: deploy
       script:
         - gcloud version || true
         - gcloud auth activate-service-account travis-k8s@$CLOUDSDK_CORE_PROJECT.iam.gserviceaccount.com --key-file=gcp-ci-secret.json
@@ -50,7 +42,5 @@ jobs:
         - chmod +x kubectl
         - echo "run a kubectl command"
         - ./kubectl get pods -A
-    - stage: deploy
-      script:
         - ./kubectl apply -f ss-ltc-devops.yaml
         - ./kubectl describe statefulset

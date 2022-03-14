@@ -28,9 +28,11 @@ script:
   - gcloud config set compute/region us-central1-a
   - gcloud config set disable_prompts true
   - gcloud container clusters get-credentials nginx-1-cluster --region us-central1-a
+  - echo "install kubectl"
+  - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  - chmod +x kubectl
   - echo "run a kubectl command"
-  - gcloud components install kubectl
-  - kubectl get pods -A
+  - ./kubectl get pods -A
 
 # project : elated-oxide-340704
 # account : travis-k8s@elated-oxide-340704.iam.gserviceaccount.com

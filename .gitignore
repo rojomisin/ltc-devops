@@ -1,3 +1,4 @@
 .idea
 .terraform
 
+gcp-ci-secret.json # dont commit plain text

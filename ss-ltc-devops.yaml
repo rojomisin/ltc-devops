@@ -30,14 +30,14 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: ltc
-          image: registry.gitlab.com/rojomisin/ltc-devops/litecoind:9
+          image: registry.gitlab.com/rojomisin/ltc-devops/litecoind:latest
           ports:
             - containerPort: 9333
               name: ltc
           volumeMounts:
             - name: blocks
               mountPath: /var/app-data
-      volumes:
+      volumes: ## ran into weird pd volume mount issues, permissions wise so worked around to using a gke disk
         - name: blocks
           # This GCE PD must already exist.
           gcePersistentDisk:

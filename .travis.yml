@@ -7,6 +7,7 @@ cache:
   directories:
     - "$HOME/google-cloud-sdk/"
 before_install:
+  - echo "travis method of encrypting creds: "https://docs.travis-ci.com/user/encrypting-files/"
   - openssl aes-256-cbc -K $encrypted_770126adc205_key -iv $encrypted_770126adc205_iv -in gcp-ci-secret.json.enc -out gcp-ci-secret.json -d
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin $DOCKER_REGISTRY
   - docker info
@@ -14,6 +15,7 @@ script:
   - echo "build docker image..."
   - docker build --platform linux/amd64 -t $TRAVIS_COMMIT-$TRAVIS_BUILD_ID .
   - docker tag $TRAVIS_COMMIT-$TRAVIS_BUILD_ID $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT
+  - docker tag $TRAVIS_COMMIT-$TRAVIS_BUILD_ID $DOCKER_REGISTRY/$DOCKER_REPO_URI:latest
   - docker push $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT
   - echo "run grype container scan"...
   - curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
@@ -22,7 +24,6 @@ script:
   - gcloud version || true
   - ls -alh
   - gcloud auth activate-service-account travis-k8s@$CLOUDSDK_CORE_PROJECT.iam.gserviceaccount.com --key-file=gcp-ci-secret.json
-#  - gcloud auth login --cred-file=gcp-ci-secret.json.enc
   - gcloud config set account travis-k8s@$CLOUDSDK_CORE_PROJECT.iam.gserviceaccount.com
   - gcloud config set core/account travis-k8s@$CLOUDSDK_CORE_PROJECT.iam.gserviceaccount.com
   - gcloud config set compute/region us-central1-a
@@ -33,8 +34,5 @@ script:
   - chmod +x kubectl
   - echo "run a kubectl command"
   - ./kubectl get pods -A
-
-# project : elated-oxide-340704
-# account : travis-k8s@elated-oxide-340704.iam.gserviceaccount.com
-# kubectl create deployment hello-server \
-#    --image=us-docker.pkg.dev/google-samples/containers/gke/hello-app:1.0
+  - ./kubectl apply -f ss-ltc-devops.yaml
+  - kubectl describe statefulset

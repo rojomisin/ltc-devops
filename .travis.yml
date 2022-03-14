@@ -20,7 +20,9 @@ script:
   - "./grype $DOCKER_REGISTRY/$DOCKER_REPO_URI:$TRAVIS_COMMIT --only-fixed --fail-on low"
   - echo "install gcloud cli and auth..."
   - gcloud version || true
-  - gcloud auth login --cred-file=gcp-ci-secret.json.enc
+  - ls -alh
+  - gcloud auth activate-service-account travis-k8s@${CLOUDSDK_CORE_PROJECT}.iam.gserviceaccount.com --key-file=gcp-ci-secret.json.enc
+#  - gcloud auth login --cred-file=gcp-ci-secret.json.enc
   - gcloud config set account travis-k8s@${CLOUDSDK_CORE_PROJECT}.iam.gserviceaccount.com
   - gcloud config set core/account travis-k8s@${CLOUDSDK_CORE_PROJECT}.iam.gserviceaccount.com
   - gcloud config set compute/region us-central1-a

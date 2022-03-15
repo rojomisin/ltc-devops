@@ -23,10 +23,11 @@ run litecoind in a container on gke
 
 ### 4 & 5
 [simple cli for temperature conversion in rust](rust-temp-conv)
-- `cargo run 80f` or `cargo run 22c
+- `cargo run 80f` or `cargo run 22c`
 
 ### 6
 [tf aws iam](tf-iam)
 - aws iam tf module
 - `terraform plan`
 - `terraform apply`
+- `aws sts assume-role --role-arn arn:aws:iam::xxxxxxxxxxxx:role/prod-ci-role --role-session-name assume1`
